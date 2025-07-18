@@ -1,17 +1,16 @@
 import os
 import fitz  # PyMuPDF
 import nltk
-
-# ✅ Make sure your path is forced
-
-nltk.download('punkt')
-
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.tokenize.punkt import PunktSentenceTokenizer
+import pickle
+from nltk.data import find  # ✅ Make sure this line exists!
 
-
-
+# Download required NLTK data
+nltk.download('punkt', quiet=True)
 
 def load_pdf(file_path):
+    """Extract text from PDF."""
     doc = fitz.open(file_path)
     text = ""
     for page in doc:
@@ -19,7 +18,8 @@ def load_pdf(file_path):
     return text
 
 def chunk_text(text, chunk_size=200, overlap=50):
-    sentences = sent_tokenize(text)  # ✅ Correct
+    """Split into overlapping chunks."""
+    sentences = sent_tokenize(text)
     chunks = []
     current_chunk = []
     total_words = 0
@@ -42,6 +42,7 @@ def chunk_text(text, chunk_size=200, overlap=50):
     return chunks
 
 def process_pdfs(folder="docs"):
+    """Load & chunk all PDFs in folder."""
     all_chunks = []
     for filename in os.listdir(folder):
         if filename.endswith(".pdf"):
@@ -54,6 +55,5 @@ def process_pdfs(folder="docs"):
 
 if __name__ == "__main__":
     chunks_with_meta = process_pdfs()
-    print(f"Total chunks created: {len(chunks_with_meta)}")
+    print(f"Total chunks: {len(chunks_with_meta)}")
     print(chunks_with_meta[0])
-
