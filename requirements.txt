@@ -1,5 +1,5 @@
-pymupdf
-nltk
-sentence-transformers
-faiss-cpu
-openai
+PyMuPDF==1.24.0
+nltk==3.9.1
+sentence-transformers==2.7.0
+faiss-cpu==1.7.4
+openai==1.30.1
