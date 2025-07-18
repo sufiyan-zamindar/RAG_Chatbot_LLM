@@ -1,27 +1,39 @@
+import sys
+print("Using Python:", sys.executable)
+
 from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
 from pdf_loader import process_pdfs
 
-# 1️⃣ Load text chunks
 chunks_with_meta = process_pdfs()
-documents = [chunk for chunk, meta in chunks_with_meta]
-metadata = [meta for chunk, meta in chunks_with_meta]
+documents = [chunk for chunk, _ in chunks_with_meta]
+metadata = [meta for _, meta in chunks_with_meta]
 
-# 2️⃣ Create embeddings
+if not documents:
+    raise ValueError("🚫 No documents found. Put PDFs in /docs!")
+
+print(f"[INFO] Loaded {len(documents)} text chunks")
+
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
-embeddings = embedder.encode(documents, convert_to_tensor=False)
+embeddings = embedder.encode(
+    documents,
+    convert_to_numpy=True,
+    show_progress_bar=True
+)
 
-# 3️⃣ Store in FAISS
-dimension = embeddings[0].shape[0]
+dimension = embeddings.shape[1] if len(embeddings.shape) == 2 else embeddings[0].shape[0]
+print(f"[INFO] Embedding dimension: {dimension}")
+
 index = faiss.IndexFlatL2(dimension)
 index.add(embeddings)
 
-# 4️⃣ Save index & metadata
+print(f"[INFO] FAISS index created with {index.ntotal} vectors")
+
 faiss.write_index(index, "docs.index")
 with open("docs.pkl", "wb") as f:
     pickle.dump(documents, f)
 with open("metadata.pkl", "wb") as f:
     pickle.dump(metadata, f)
 
-print("✅ Embeddings created & index saved.")
+print("[INFO] Embeddings + index + metadata saved successfully!")
