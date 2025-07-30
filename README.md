@@ -29,7 +29,7 @@ The pipeline consists of 4 main stages:
 ### 1. Clone the Repository
 
 '''bash
-git clone https://github.com/your-username/rag-chatbot.git
+- git clone https://github.com/sufiyan-zamindar/RAG_Chatbot_LLM
 cd rag-chatbot
 
 
@@ -38,7 +38,8 @@ cd rag-chatbot
 - .\env\Scripts\activate
 
 ### 3. Install dependencies
-pip install -r requirements.txt
+
+- pip install -r requirements.txt
 
 ### 4. Add Your PDFs
 - Put all your PDF files in the /docs folder.
@@ -89,7 +90,7 @@ The chatbot retrieves the best chunks and gives accurate answers using GPT-4o.
 
 ## Contact
 - Made by: Sufiyan Zamindar
-- GitHub: https://www.github.com/sufiyanzamindar
+- GitHub: https://github.com/sufiyan-zamindar
 - linkedin : https://www.linkedin.com/in/sufiyan012/
 - Email: sufiyanzmaindar012@gmail.com
 
