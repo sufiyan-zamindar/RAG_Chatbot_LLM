@@ -1,22 +1,32 @@
 import os
-import faiss
 import pickle
+import numpy as np
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
+from sklearn.neighbors import NearestNeighbors
 
+# Init OpenAI and embedder
 client = OpenAI()
-
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
-index = faiss.read_index("docs.index")
 
+# Load documents and their embeddings
 with open("docs.pkl", "rb") as f:
     documents = pickle.load(f)
 
+with open("embeddings.pkl", "rb") as f:
+    embeddings = pickle.load(f)
+
+# Fit NearestNeighbors index
+index = NearestNeighbors(n_neighbors=3, metric="euclidean")
+index.fit(embeddings)
+
+# Retrieve relevant documents
 def retrieve(query, k=3):
     query_emb = embedder.encode([query], convert_to_numpy=True)
-    D, I = index.search(query_emb, k)
-    return [documents[i] for i in I[0]]
+    distances, indices = index.kneighbors(query_emb, n_neighbors=k)
+    return [documents[i] for i in indices[0]]
 
+# Generate response
 def generate_answer(query):
     relevant_chunks = retrieve(query)
     context = "\n\n".join(relevant_chunks)
@@ -49,4 +59,3 @@ if __name__ == "__main__":
             break
         answer = generate_answer(user_q)
         print("\n[Answer]:", answer)
-
